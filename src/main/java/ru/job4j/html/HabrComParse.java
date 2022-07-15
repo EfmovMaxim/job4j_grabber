@@ -21,14 +21,9 @@ import java.util.TimeZone;
 
 public class HabrComParse implements Parse{
     private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssz");
-          //  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
     public Post detail(String link) throws IOException {
         Document doc = Jsoup.connect(link).get();
-        /*Elements row = doc.select(".vacancy-header__date");
-        Element e = row.first();
-        LocalDateTime createdDate =  LocalDateTime.parse(e.child(0).child(0).attr("datetime"), dateFormat);
-        */
         Elements row = doc.select(".style-ugc");
         Element e = row.first();
 

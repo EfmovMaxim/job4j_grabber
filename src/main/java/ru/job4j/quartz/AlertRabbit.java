@@ -32,8 +32,7 @@ public class AlertRabbit {
     }
 
     public static Connection initConnection(Properties properties) {
-        try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
-
+        try {
             Class.forName(properties.getProperty("driver-class-name"));
             return DriverManager.getConnection(
                     properties.getProperty("url"),

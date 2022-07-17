@@ -33,14 +33,20 @@ public class PsqlStore implements Store, AutoCloseable {
 
     @Override
     public void save(Post post) {
-        try(PreparedStatement statement
-                    = cnn.prepareStatement("INSERT INTO post (title, description, created, link) VALUES (?, ?, ?, ?)")) {
-            statement.setString(1, post.getTitle());
-            statement.setString(2, post.getDescription());
-            statement.setTimestamp(3, Timestamp.valueOf(post.getCreated()));
-            statement.setString(4, post.getLink());
+        String query;
+        if (findByLink(post.getLink()) == null) {
+            query = "INSERT INTO post (title, description, created, link) VALUES (?, ?, ?, ?)";
+        } else {
+            query = "UPDATE post SET title = ?, description = ?, created = ? WHERE link = ?";
+        }
 
-            statement.execute();
+        try(PreparedStatement statement
+                = cnn.prepareStatement(query)) {
+        statement.setString(1, post.getTitle());
+        statement.setString(2, post.getDescription());
+        statement.setTimestamp(3, Timestamp.valueOf(post.getCreated()));
+        statement.setString(4, post.getLink());
+        statement.execute();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -74,10 +80,15 @@ public class PsqlStore implements Store, AutoCloseable {
     public Post findById(int id) {
         return executeStatement(
                 String.format("SELECT post_id, title, link, description, created FROM post WHERE post_id = %d", id))
-                .iterator()
-                .next();
+                .stream().findFirst().orElse(null);
     }
 
+    @Override
+    public Post findByLink(String link) {
+        return executeStatement(
+                String.format("SELECT post_id, title, link, description, created FROM post WHERE link = '%s'",link))
+                .stream().findFirst().orElse(null);
+    }
 
     public static void main(String[] args) {
         Properties cfg = new Properties();
@@ -92,7 +103,7 @@ public class PsqlStore implements Store, AutoCloseable {
         List<Post> rsl = new LinkedList<>();
 
 
-        /*
+
         HabrComParse habr = new HabrComParse();
         try {
             rsl = habr.list("https://career.habr.com/vacancies/java_developer");
@@ -113,9 +124,7 @@ public class PsqlStore implements Store, AutoCloseable {
             }
 
         }
-        */
 
         store.getAll().forEach(System.out::println);
-        System.out.println(store.findById(33));
     }
 }

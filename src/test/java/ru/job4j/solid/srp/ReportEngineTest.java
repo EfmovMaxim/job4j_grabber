@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.job4j.solid.srp.ReportEngine.DATE_FORMAT;
+import static ru.job4j.solid.srp.TXTOutput.DATE_FORMAT;
 
 class ReportEngineTest {
     @Test
@@ -32,9 +32,7 @@ class ReportEngineTest {
                 .append(worker1.getSalary() * 2).append(";")
                 .append(System.lineSeparator());
         assertEquals(expect.toString(), engine.generate(em -> true,
-                new TXTOutput(),
-                List.of("Name", "Hired", "Fired", "Salary"),
-                s -> s * 2,
+                new TXTOutput(List.of("Name", "Hired", "Fired", "Salary"), s -> s * 2),
                 new EmployeeDescBySalary()));
     }
 }

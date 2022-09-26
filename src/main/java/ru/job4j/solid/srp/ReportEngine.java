@@ -11,38 +11,21 @@ import java.util.function.Predicate;
 public class ReportEngine implements Report {
 
     private Store store;
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd:MM:yyyy HH:mm");
+
 
     public ReportEngine(Store store) {
         this.store = store;
     }
 
     @Override
-    public String generate(Predicate<Employee> filter, OutputFormat outputFormat, List<String> columns, Function<Double, Double> salaryConvert, Comparator<Employee> comparator) {
-        outputFormat.outputTitle(columns);
-
-        List<String> row = new ArrayList();
+    public String generate(Predicate<Employee> filter, OutputFormat outputFormat, Comparator<Employee> comparator) {
         List<Employee> employees = store.findBy(filter);
         employees.sort(comparator);
-
-        for (Employee employee : employees) {
-            if (columns.contains("Name")) {
-                row.add(employee.getName());
-            }
-            if (columns.contains("Hired")) {
-                row.add(DATE_FORMAT.format(employee.getHired().getTime()));
-            }
-            if (columns.contains("Fired")) {
-                row.add(DATE_FORMAT.format(employee.getFired().getTime()));
-            }
-            if (columns.contains("Salary")) {
-                row.add(String.valueOf(salaryConvert.apply(employee.getSalary())));
-            }
-            outputFormat.outputRow(row);
-            row.clear();
+        try {
+            outputFormat.giveFormat(employees);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        outputFormat.outputBasement();
-
         return outputFormat.getOutputText().toString();
     }
 
@@ -55,9 +38,15 @@ public class ReportEngine implements Report {
         store.add(worker2);
         Report engine = new ReportEngine(store);
         System.out.println(engine.generate(em -> true,
-                new HTMLOutput(),
-                List.of("Name", "Hired", "Fired", "Salary"),
-                s -> s * 2,
+                new HTMLOutput(List.of("Name", "Hired", "Fired", "Salary"), s -> s * 2),
+                new EmployeeDescBySalary()));
+
+        System.out.println(engine.generate(em -> true,
+                new JAXBOutput(),
+                new EmployeeDescBySalary()));
+
+        System.out.println(engine.generate(em -> true,
+                new XMLOutput(),
                 new EmployeeDescBySalary()));
     }
 }

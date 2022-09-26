@@ -6,5 +6,5 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface Report {
-    String generate(Predicate<Employee> filter, OutputFormat outputFormat, List<String> columns, Function<Double, Double> salaryConvert, Comparator<Employee> comparator);
+    String generate(Predicate<Employee> filter, OutputFormat outputFormat, Comparator<Employee> comparator);
 }

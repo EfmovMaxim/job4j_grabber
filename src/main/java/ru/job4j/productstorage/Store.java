@@ -10,6 +10,8 @@ public interface Store {
 
     List<Food> getFoods();
 
+    void clearFoods();
+
     default double calcExpRemain(Food food) {
         long now = Calendar.getInstance().getTimeInMillis();
         double expRemain;

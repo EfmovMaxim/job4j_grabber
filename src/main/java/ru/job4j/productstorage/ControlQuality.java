@@ -15,6 +15,19 @@ public class ControlQuality {
         }
     }
 
+    public void resort() {
+        List<Food> foods = new ArrayList<>();
+        for (Store store: stores) {
+            foods.addAll(store.getFoods());
+            store.clearFoods();
+        }
+
+        for (Food food : foods) {
+            allocateInStock(food);
+        }
+
+    }
+
     public List<Store> getStores() {
         return stores;
     }
@@ -43,6 +56,17 @@ public class ControlQuality {
             System.out.println(store.toString());
             store.getFoods().forEach(System.out::println);
         }
+
+
+        bananas.setExpiryDate(new GregorianCalendar(2022, Calendar.SEPTEMBER, 1));
+        controlQuality.resort();
+        System.out.println("---После перераспределения---");
+
+        for (Store store : controlQuality.stores) {
+            System.out.println(store.toString());
+            store.getFoods().forEach(System.out::println);
+        }
+
     }
 
 }

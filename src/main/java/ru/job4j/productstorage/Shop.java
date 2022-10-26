@@ -34,4 +34,9 @@ public class Shop implements Store {
     public List<Food> getFoods() {
         return foods.stream().toList();
     }
+
+    @Override
+    public void clearFoods() {
+        foods.clear();
+    }
 }
